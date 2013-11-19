@@ -6,13 +6,19 @@ class OpenFoamInstaller(ClusterSetup):
 		None
 
 	def run(self, nodes, master, user, user_shell, volumes):
-		for node in nodes:
-			self.aptInstallOpenFoam(node)
+		package = "openfoam222"
 
-	def aptInstallOpenFoam(self, instance):
+		# install it on all nodes
+		for node in nodes:
+			self.aptInstallOpenFoam(node, package)
+
+		# set the environment
+		master.ssh.switch_user(user)
+		master.ssh.execute("echo . /opt/%s/etc/bashrc >> ~/.bashrc" % package)
+
+	def aptInstallOpenFoam(self, instance, package):
 		repository = "deb http://www.openfoam.org/download/ubuntu `lsb_release -cs` main"
 		listFile = "/etc/apt/sources.list.d/openfoam.list"
-		package = "openfoam222"
 
 		log.info("installing %s on %s" % (package, instance.alias))
 		
@@ -20,6 +26,3 @@ class OpenFoamInstaller(ClusterSetup):
 		instance.ssh.execute("echo %s > %s" % (repository, listFile))
 		instance.apt_command("update")
 		instance.apt_install(package)
-
-		# set the environment
-		instance.ssh.execute("echo . /opt/%s/etc/bashrc >> ~/.bashrc" % package)
