@@ -10,7 +10,7 @@ class OpenFoamInstaller(ClusterSetup):
 			self.aptInstallOpenFoam(node)
 
 	def aptInstallOpenFoam(self, instance):
-		repository = "deb http://www.openfoam.org/download/ubuntu precise main"
+		repository = "deb http://www.openfoam.org/download/ubuntu `lsb_release -cs` main"
 		listFile = "/etc/apt/sources.list.d/openfoam.list"
 		installOptions = "-y --force-yes"
 		package = "openfoam222"
